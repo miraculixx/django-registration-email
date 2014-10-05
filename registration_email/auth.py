@@ -6,8 +6,16 @@ Inspired by http://djangosnippets.org/snippets/2463/
 """
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
-from django.core.validators import email_re
+from django.core.validators import EmailValidator
 
+def email_valid(string):
+    try:
+        validator = EmailValidator()
+        validator(string)
+    except:
+        return False
+    else:
+        return True
 
 class EmailBackend(ModelBackend):
     """
@@ -20,7 +28,7 @@ class EmailBackend(ModelBackend):
     supports_inactive_user = False
 
     def authenticate(self, username=None, password=None):
-        if email_re.search(username):
+        if email_valid(username):
             try:
                 user = User.objects.get(email=username)
             except User.DoesNotExist:
